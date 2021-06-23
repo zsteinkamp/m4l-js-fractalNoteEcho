@@ -4,9 +4,7 @@ This Max For Live device uses Javascript to implement a fractal MIDI note echo e
 
 This allows for easy creation of very complex patterns that, due to their nature in following a scaled pattern, tend to be pleasant to listen to and can inspire creativity you didn't know you had.
 
-Here is an example of a song I put together:
-
-<iframe style="border: 0; width: 100%; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/track=641710418/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/" seamless><a href="https://zacksteinkamp.bandcamp.com/track/fnd2">FND2 by Zack Steinkamp</a></iframe>
+Here is an [example of a song](https://zacksteinkamp.bandcamp.com/track/fnd2) I put together.
 
 ## What is a fractal MIDI note echo effect you ask?
 
