@@ -1,5 +1,6 @@
+autowatch=1;
 inlets=12;
-outlets=3;
+outlets=4;
 
 // inlets
 var INLET_NOTE = 0;
@@ -19,6 +20,7 @@ var INLET_DUR_DECAY = 11;
 var OUTLET_NOTE = 0;
 var OUTLET_VELOCITY = 1;
 var OUTLET_DURATION = 2;
+var OUTLET_JSUI = 3;
 
 // eventually hold arrays
 var pattern; // tap pattern
@@ -53,18 +55,22 @@ function setupRepeats() {
   iterRepeats(options[INLET_ITERATIONS], 0);
   repeats = repeats.sort( function(a, b) { return a.ms - b.ms; } );
   //log(repeats);
+  outlet(OUTLET_JSUI, ['repeats'].concat(repeats));
 }
 
 function iterRepeats(togo, offsetMs) {
   for (var idx = 0; idx < pattern.length; idx++) {
-	var level = options[INLET_ITERATIONS] - togo;
-	var ms = pattern[idx] * Math.pow(options[INLET_STRETCH], level);
-	if (level > 0 && pattern[idx] === 0) {
+    var level = options[INLET_ITERATIONS] - togo;
+    var ms = pattern[idx] * Math.pow(options[INLET_STRETCH], level);
+    if (level > 0 && pattern[idx] === 0) {
       continue;
     }
     repeats.push({
       ms: parseInt(ms + offsetMs),
-      level: level
+      level: level,
+      velocity_coeff: Math.pow(options[INLET_DECAY], level + (idx / 4.0)),
+      note_incr: options[INLET_NOTEINCR] * level,
+      duration: parseInt(options[INLET_DUR_BASE] * Math.pow(options[INLET_DUR_DECAY], level + (idx / 4.0)))
     });
     if (togo > 1 && ms > 0) {
       iterRepeats(togo - 1, parseInt(ms + offsetMs));
@@ -73,19 +79,25 @@ function iterRepeats(togo, offsetMs) {
 }
 
 function makeTask(r, n, v) {
+  //log( {
+  //     arr: r,
+  //     enn: n,
+  //     enn2: n + r.note_incr,
+  //     vee: v,
+  //     vee2: v * r.velocity_coeff
+  //});
   return function() {
-    n = n + (options[INLET_NOTEINCR] * r.level);
-    v = parseInt(v * Math.pow(options[INLET_DECAY], r.level));
-    var d = parseInt(options[INLET_DUR_BASE] * Math.pow(options[INLET_DUR_DECAY], (r.level)));
+    n = parseInt(n + r.note_incr);
+    v = parseInt(v * r.velocity_coeff);
+    d = r.duration;
 
     //log({
-    //  i: r.level,
     //  n: n,
     //  v: v,
     //  d: d,
     //});
 
-    outlet(OUTLET_DURATION, d);
+    outlet(OUTLET_DURATION, r.duration);
     outlet(OUTLET_VELOCITY, v);
     outlet(OUTLET_NOTE, n);
   }
@@ -119,12 +131,12 @@ function log() {
     var message = arguments[i];
     if(message && message.toString) {
       var s = message.toString();
-      if(s.indexOf("[object ") >= 0) {
+      if (s.indexOf("[object ") >= 0) {
         s = JSON.stringify(message);
       }
       post(s);
     }
-    else if(message === null) {
+    else if (message === null) {
       post("<null>");
     }
     else {
