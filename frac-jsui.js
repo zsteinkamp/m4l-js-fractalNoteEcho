@@ -6,64 +6,46 @@ var pattern = [];
 
 function draw()
 {
-  sketch.glclearcolor(1.0, 1.0, 1.0, 1.0);
-  sketch.glclear();
-
-  var maxMs = 0;
-  var minNote = 0;
-  var maxNote = 0;
-  var minVelo = 0;
-  var maxVelo = 0;
   var tap;
   var offset;
   var color;
-  for (var i = 0; i < pattern.length; i++) {
-    tap = pattern[i];
-    //log(tap);
-    if (tap.ms > maxMs) { maxMs = tap.ms; }
-    if (tap.note_incr > maxNote) { maxNote = tap.note_incr; }
-    if (tap.note_incr < minNote) { minNote = tap.note_incr; }
-    if (tap.velocity_coeff > maxVelo) { maxVelo = tap.velocity_coeff; }
-    if (tap.velocity_coeff < minVelo) { minVelo = tap.velocity_coeff; }
-  }
-
-  var noteRange = maxNote - minNote;
-  var veloRange = maxVelo - minVelo;
   var hue;
+  var thick_coeff = 10;
 
-  //log({
-  //  MaxMS: maxMs,
-  //  MinNote: minNote,
-  //  MaxNote: maxNote,
-  //  NoteRange: noteRange
-  //});
-
-  var brights   = scale(pattern.map( function (tap) { return tap.velocity_coeff; } ), 0.75, 0.25);
-  var x_offsets = scale(pattern.map( function (tap) { return tap.ms; } ), -2.25, 3);
-  var y_offsets = scale(pattern.map( function (tap) { return tap.level; } ), 0.26, -0.25);
+  var xs = scaleNotes(pattern, -2.25, 3.25);
+  var ys = scale(pattern.map( function (tap) { return tap.level; } ), 0.26, -0.20);
   var durations = scale(pattern.map( function (tap) { return tap.duration; } ), .25, 0.5);
 
+  // start drawing
+  sketch.glclearcolor(1.0, 1.0, 1.0, 1.0);
+  sketch.glclear();
+
   for (var i = 0; i < pattern.length; i++) {
     tap = pattern[i];
-    sketch.moveto(x_offsets[i], y_offsets[i]);
+
     // set foreground color
     hue = (360 + (30 * tap.note_incr) % 360) % 360;
 
     //log({
-    //  note_incr: tap.note_incr,
-    //  ms: tap.ms,
-    //  offset: offset,
+    //  tap: tap,
+    //  x1: xs.start[i],
+    //  x2: xs.end[i],
+    //  y: ys[i],
     //  hue: hue
     //});
-    color = HSLToRGB(hue, 0.8, brights[i]);
+
+    color = HSLToRGB(hue, 0.9, 0.6);
     sketch.glcolor(color.r, color.g, color.b, 1.0);
-    sketch.glrect(x_offsets[i], y_offsets[i], x_offsets[i] + durations[i], y_offsets[i] + 0.1);
+    sketch.glrect(xs.start[i], ys[i] - (tap.velocity_coeff / thick_coeff), xs.end[i], ys[i] + (tap.velocity_coeff / thick_coeff));
+    sketch.glcolor(0,0,0,1); // black dot to indicate beginning of note
+    sketch.glrect(xs.start[i], ys[i] - (tap.velocity_coeff / thick_coeff * 1.1), xs.start[i] + 0.05, ys[i] + (tap.velocity_coeff / thick_coeff * 1.1));
   }
   sketch.glcolor(0, 0, 0, 1.0);
   sketch.moveto(0.5, -.4);
   if (pattern.length > 0) {
     sketch.textalign("center");
-    sketch.text("<--- " + pattern.length + " Taps // Total " + parseInt(pattern[pattern.length - 1].ms)/1000 + " seconds --->");
+    var lastTap = pattern[pattern.length - 1];
+    sketch.text("<--- " + pattern.length + " Taps // Total " + parseInt(lastTap.ms + lastTap.duration)/1000 + " seconds --->");
   }
 }
 
@@ -107,6 +89,36 @@ draw();
 ////// UTILS BELOW
 //////
 
+// scale the note starts and ends in the pattern
+function scaleNotes(pattern, newMin, newMax) {
+  // get range
+  var min = null
+  var max = null;
+  for (var i = 0; i < pattern.length; i++) {
+    var noteStart = pattern[i].ms;
+    var noteEnd = noteStart + pattern[i].duration;
+    if (min === null || noteStart < min) { min = noteStart; }
+    if (max === null || noteEnd > max) { max = noteEnd; }
+  }
+  var range = max - min;
+
+  var newRange = newMax - newMin;
+
+  var coeff = range ? newRange / parseFloat(range) : 0.0;
+
+  var offset = newMin - (min * coeff)
+
+  var returnObj = {
+    start: [],
+    end: []
+  };
+  for (var i = 0; i < pattern.length; i++) {
+    returnObj.start.push(pattern[i].ms * coeff + offset);
+    returnObj.end.push((pattern[i].ms + pattern[i].duration) * coeff + offset);
+  }
+  //log(returnArray);
+  return returnObj;
+}
 // scale the values in a numeric array to the bounds specified in newMin, newMax
 function scale(array, newMin, newMax) {
   // get range
@@ -120,15 +132,25 @@ function scale(array, newMin, newMax) {
 
   var newRange = newMax - newMin;
 
-  var coeff = newRange / parseFloat(range);
+  var coeff = range ? newRange / parseFloat(range) : 0.0;
 
-  var offset = newMin - (min * coeff)
+  var offset = newMin - (min * coeff);
 
   var returnArray = [];
   for (var i = 0; i < array.length; i++) {
     returnArray.push(array[i] * coeff + offset);
   }
-  //log(returnArray);
+
+  //log({
+  //    min: min,
+  //    max: max,
+  //    range: range,
+  //    newRange: newRange,
+  //    coeff: coeff,
+  //    offset: offset,
+  //    return: returnArray
+  //});
+
   return returnArray;
 }
 
