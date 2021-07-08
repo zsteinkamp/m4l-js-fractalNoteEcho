@@ -4,7 +4,7 @@ This Max For Live device uses Javascript to implement a fractal MIDI note echo e
 
 This allows for easy creation of very complex patterns that, due to their nature in following a scaled pattern, tend to be pleasant to listen to and can inspire creativity you didn't know you had.
 
-Here is an [example of a song](https://zacksteinkamp.bandcamp.com/track/fnd2) I put together.
+Here is an [example of a song](https://zacksteinkamp.bandcamp.com/track/two-trees) I put together.
 
 ## What is a fractal MIDI note echo effect you ask?
 
@@ -40,6 +40,7 @@ This is the first thing I've done in Javascript with Max For Live, and I'm in lo
 
 ## Ideas
 
+<<<<<<< HEAD
 * I'd like to have the UI display some visualization of the echo, like the diagrams above.
 
 
@@ -103,4 +104,4 @@ If you delete a `src/*.ts` file, you will need to manually delete the `js` file 
 
 ## TODOs
 
-- ...
+* I'd like to have the UI display a better visualization of the echo, like the diagrams above.

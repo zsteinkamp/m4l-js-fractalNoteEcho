@@ -2,6 +2,8 @@ autowatch=1;
 inlets=12;
 outlets=4;
 
+var utils = require("utils.js");
+
 // inlets
 var INLET_NOTE = 0;
 var INLET_VELOCITY = 1;
@@ -54,7 +56,7 @@ function setupRepeats() {
   repeats = [];
   iterRepeats(options[INLET_ITERATIONS], 0);
   repeats = repeats.sort( function(a, b) { return a.ms - b.ms; } );
-  //log(repeats);
+  //utils.log(repeats);
   outlet(OUTLET_JSUI, ['repeats'].concat(repeats));
 }
 
@@ -79,7 +81,7 @@ function iterRepeats(togo, offsetMs) {
 }
 
 function makeTask(r, n, v) {
-  //log( {
+  //utils.log( {
   //     arr: r,
   //     enn: n,
   //     enn2: n + r.note_incr,
@@ -91,7 +93,7 @@ function makeTask(r, n, v) {
     v = parseInt(v * r.velocity_coeff);
     d = r.duration;
 
-    //log({
+    //utils.log({
     //  n: n,
     //  v: v,
     //  d: d,
@@ -118,30 +120,10 @@ function handleMessage(i) {
   }
 
   if (inlet === INLET_NOTE && options[INLET_VELOCITY] > 0) {
-    //log("=================================");
+    //utils.log("=================================");
     for (var idx = 0; idx < repeats.length; idx++) {
       var t = new Task( makeTask(repeats[idx], options[INLET_NOTE], options[INLET_VELOCITY]) );
       t.schedule(repeats[idx].ms);
     }
   }
-}
-
-function log() {
-  for(var i=0,len=arguments.length; i<len; i++) {
-    var message = arguments[i];
-    if(message && message.toString) {
-      var s = message.toString();
-      if (s.indexOf("[object ") >= 0) {
-        s = JSON.stringify(message);
-      }
-      post(s);
-    }
-    else if (message === null) {
-      post("<null>");
-    }
-    else {
-      post(message);
-    }
-  }
-  post("\n");
 }
