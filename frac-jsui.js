@@ -18,7 +18,7 @@ function draw()
   var durations = utils.scale(pattern.map( function (tap) { return tap.duration; } ), .25, 0.5);
 
   // start drawing
-  sketch.glclearcolor(1.0, 1.0, 1.0, 1.0);
+  sketch.glclearcolor(1.0, 1.0, 1.0, 0.0); // transparent
   sketch.glclear();
 
   for (var i = 0; i < pattern.length; i++) {
@@ -46,13 +46,14 @@ function draw()
   if (pattern.length > 0) {
     sketch.textalign("center");
     var lastTap = pattern[pattern.length - 1];
+    sketch.glcolor(1,1,1,1); // white text
     sketch.text("<--- " + pattern.length + " Taps // Total " + parseInt(lastTap.ms + lastTap.duration)/1000 + " seconds --->");
   }
 }
 
 
 function repeats(data) {
-  pattern = arrayfromargs(arguments);
+  pattern = arrayfromargs(arguments); // magic method provided by Max For Live
   //utils.log("Received: " + JSON.stringify(pattern));
   draw();
   refresh();
