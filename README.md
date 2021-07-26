@@ -26,18 +26,16 @@ If you add a tap to this and keep Iterations set to 2, now you start to get some
 
 ![Two Taps, Two Iteration Example](images/iter2.2.png)
 
-Merely turning Iterations up to 4 gives a much more complex result. Notice each iteration is 75% as large as the prior one.
+Turning Iterations up to 3 gives a much more complex result. Notice each iteration is 75% as large as the prior one.
 
-![Two Taps, Four Iteration Example](images/iter4.2.png)
+![Two Taps, Four Iteration Example](images/iter2.3.png)
+
+And finally turning Iterations up to 4 more than doubles the number of notes, and gives even more complexity.
+
+![Two Taps, Four Iteration Example](images/iter2.4.png)
 
 Along with four taps and iterations, there are controls for velocity decay, note length, note length decay, and iteration note offset. With the note offset, the layers of iterations (the different colors in the diagrams above) can trigger different MIDI notes -- either slices of a sample or to form intersting chordal patterns.
-
-![The Device UI](images/plugin.png)
 
 ## About the Code
 
 This is the first thing I've done in Javascript with Max For Live, and I'm in love! I have struggled to make peace with M4L's mindset, so this let's the programmer in me really come out.
-
-## Ideas
-
-* I'd like to have the UI display a better visualization of the echo, like the diagrams above.
