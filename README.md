@@ -102,3 +102,4 @@ This will update the `package.json` and `yarn.lock` files, which you can then co
 If you delete a `src/*.ts` file, you will need to manually delete the `js` file from the `Project/` directory. You can do this either on the host directly (e.g. in the Finder/Explorer, or in a Terminal window) or from within VSCode (e.g. via `rm` in the Cmd-J shell window or by right-clicking the file in the Explorer and choosing "Delete Permanently").
 
 ## TODOs
+...
