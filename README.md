@@ -38,4 +38,4 @@ Along with four taps and iterations, there are controls for velocity decay, note
 
 ## About the Code
 
-This is the first thing I've done in Javascript with Max For Live, and I'm in love! I have struggled to make peace with M4L's mindset, so this let's the programmer in me really come out.
+This is the first thing I've done in Javascript with Max For Live, and I'm in love! I have struggled to make peace with M4L's mindset, so this lets the programmer in me really come out.
