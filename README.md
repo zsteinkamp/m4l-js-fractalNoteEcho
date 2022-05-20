@@ -6,6 +6,14 @@ This allows for easy creation of very complex patterns that, due to their nature
 
 Here is an [example of a song](https://zacksteinkamp.bandcamp.com/track/two-trees) I put together.
 
+## Installation / Setup
+
+If you just want to download and install the device, then go to the [frozen/](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/tree/main/frozen) directory and download the newest version there.
+
+### Changelog
+
+* [0.0.1](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/raw/main/frozen/FractalNoteEcho-0.0.1.amxd) - 2022-05-19 - Initial frozen release.
+
 ## What is a fractal MIDI note echo effect you ask?
 
 Well, it's a device that sends note echoes, but each echo follows the rules of fractals. Before we get into the fractal part, understand first how you set up your base echo pattern.
