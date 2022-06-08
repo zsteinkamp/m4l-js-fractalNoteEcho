@@ -12,6 +12,7 @@ If you just want to download and install the device, then go to the [frozen/](ht
 
 ### Changelog
 
+* [0.0.2](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/raw/main/frozen/FractalNoteEcho-0.0.2.amxd) - 2022-06-07 - Improved look and feel.
 * [0.0.1](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/raw/main/frozen/FractalNoteEcho-0.0.1.amxd) - 2022-05-19 - Initial frozen release.
 
 ## What is a fractal MIDI note echo effect you ask?
