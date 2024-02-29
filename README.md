@@ -4,7 +4,7 @@ This Max For Live device uses Javascript to implement a fractal MIDI note echo e
 
 This allows for easy creation of very complex patterns that, due to their nature in following a scaled pattern, tend to be pleasant to listen to and can inspire creativity you didn't know you had.
 
-Here is an [example of a song](https://zacksteinkamp.bandcamp.com/track/two-trees) I put together.
+![Two Taps, Four Iteration Example](images/iter2.4.png)
 
 ## Installation / Setup
 
