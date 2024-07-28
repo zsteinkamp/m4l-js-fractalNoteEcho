@@ -1,0 +1,15 @@
+{
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "node",
+  "workspaceFolder": "/app",
+  "shutdownAction": "stopCompose",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rvest.vs-code-prettier-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.makefile-tools"
+      ]
+    }
+  }
+
