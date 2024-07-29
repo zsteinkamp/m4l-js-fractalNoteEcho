@@ -12,6 +12,7 @@ If you just want to download and install the device, then go to the [frozen/](ht
 
 ### Changelog
 
+- [4](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/raw/main/frozen/FractalNoteEcho-4.amxd) - 2023-07-28 - Rewrite in Typescript, add flashing bubbles.
 - [3](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/raw/main/frozen/FractalNoteEcho-3.amxd) - 2023-07-09 - Add tempo-synced time mode option.
 - [0.0.2](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/raw/main/frozen/FractalNoteEcho-0.0.2.amxd) - 2022-06-07 - Improved look and feel.
 - [0.0.1](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/raw/main/frozen/FractalNoteEcho-0.0.1.amxd) - 2022-05-19 - Initial frozen release.
@@ -46,7 +47,7 @@ And finally turning Iterations up to 4 more than doubles the number of notes, an
 
 Along with four taps and iterations, there are controls for velocity decay, note length, note length decay, and iteration note offset. With the note offset, the layers of iterations (the different colors in the diagrams above) can trigger different MIDI notes -- either slices of a sample or to form intersting chordal patterns.
 
-## About the Code
+## Original Code Comment
 
 This is the first thing I've done in Javascript with Max For Live, and I'm in love! I have struggled to make peace with M4L's mindset, so this let's the programmer in me really come out.
 
@@ -54,9 +55,9 @@ This is the first thing I've done in Javascript with Max For Live, and I'm in lo
 
 ---
 
-# m4l-typescript-base
+# Developers, Read On...
 
-Provides a starting point for a Typescript-based development environment for Max for Live projects that use Javascript objects like `js` and `jsui`. Uses Docker and VSCode devcontainer for the heavy lifting, thus eliminating the need to manage a build toolchain on your dev machine.
+This project uses [zsteinkamp/m4l-typescript-base](https://github.com/zsteinkamp/m4l-typescript-base), which provides a starting point for a Typescript-based development environment for Max for Live projects that use Javascript objects like `js` and `jsui`. It uses Docker and VSCode devcontainer for the heavy lifting, thus eliminating the need to manage a build toolchain on your dev machine.
 
 Since it uses `types/maxforlive`, you can have good completion and parameter documentation for Max for Live Javascript objects.
 
