@@ -4,7 +4,7 @@ Provides a starting point for a Typescript-based development environment for Max
 
 Since it uses `types/maxforlive`, you can have good completion and parameter documentation for Max for Live Javascript objects.
 
-![Code Completion](images/code_completion.png)
+![Code Completion](images/code_completion.png|width=10)
 ![Code Reference](images/code_ref.png)
 
 The container mounts the repo directory from the host read-write, and runs `tsc watch`, looking for changes in the `src/` directory. Any changes to `*.ts` files in the `src/` directory are built and transpiled to `Project/*.js`.
