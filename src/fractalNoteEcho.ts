@@ -1,14 +1,29 @@
-autowatch=1;
-inlets=12;
-outlets=5;
+autowatch = 1;
+inlets = 12;
+outlets = 5;
 
 // set up sketch canvas
 sketch.default2d();
 sketch.glloadidentity();
 
+
+type LaneMeta = {
+  start: boolean,
+  ms: number,
+  parent: number
+}
+
+type NoteMeta = {
+  ms: number,
+  level: number,
+  velocity_coeff: number,
+  note_incr: number,
+  duration: number,
+};
+
 var utils = {
   // scale the values in a numeric array to the bounds specified in newMin, newMax
-  scale: function(array, newMin, newMax) {
+  scale: function (array: number[], newMin: number, newMax: number) {
     // get range
     var min = null
     var max = null;
@@ -20,7 +35,7 @@ var utils = {
 
     var newRange = newMax - newMin;
 
-    var coeff = range ? newRange / parseFloat(range) : 0.0;
+    var coeff = range ? newRange / range : 0.0;
 
     var offset = newMin - (min * coeff);
 
@@ -42,15 +57,15 @@ var utils = {
     return returnArray;
   },
 
-  HSLToRGB: function(h,s,l) {
+  HSLToRGB: function (h: number, s: number, l: number) {
     //exports.log({ h: h, s: s, l: l });
 
     var c = (1 - Math.abs(2 * l - 1)) * s,
-        x = c * (1 - Math.abs((h / 60) % 2 - 1)),
-        m = l - c/2,
-        r = 0,
-        g = 0,
-        b = 0;
+      x = c * (1 - Math.abs((h / 60) % 2 - 1)),
+      m = l - c / 2,
+      r = 0,
+      g = 0,
+      b = 0;
     if (0 <= h && h < 60) {
       r = c; g = x; b = 0;
     } else if (60 <= h && h < 120) {
@@ -71,17 +86,17 @@ var utils = {
     };
   },
 
-  log: function() {
-    for(var i=0,len=arguments.length; i<len; i++) {
+  log: function () {
+    for (var i = 0, len = arguments.length; i < len; i++) {
       var message = arguments[i];
-      if(message && message.toString) {
+      if (message && message.toString) {
         var s = message.toString();
-        if(s.indexOf("[object ") >= 0) {
+        if (s.indexOf("[object ") >= 0) {
           s = JSON.stringify(message);
         }
         post(s);
       }
-      else if(message === null) {
+      else if (message === null) {
         post("<null>");
       }
       else {
@@ -93,30 +108,30 @@ var utils = {
 };
 
 // inlets
-var INLET_NOTE = 0;
-var INLET_VELOCITY = 1;
-var INLET_ITERATIONS = 2;
-var INLET_STRETCH = 3;
-var INLET_DECAY = 4;
-var INLET_NOTEINCR = 5;
-var INLET_BASE1 = 6;
-var INLET_BASE2 = 7;
-var INLET_BASE3 = 8;
-var INLET_BASE4 = 9;
-var INLET_DUR_BASE = 10;
-var INLET_DUR_DECAY = 11;
+const INLET_NOTE = 0;
+const INLET_VELOCITY = 1;
+const INLET_ITERATIONS = 2;
+const INLET_STRETCH = 3;
+const INLET_DECAY = 4;
+const INLET_NOTEINCR = 5;
+const INLET_BASE1 = 6;
+const INLET_BASE2 = 7;
+const INLET_BASE3 = 8;
+const INLET_BASE4 = 9;
+const INLET_DUR_BASE = 10;
+const INLET_DUR_DECAY = 11;
 
 // outlets
-var OUTLET_NOTE = 0;
-var OUTLET_VELOCITY = 1;
-var OUTLET_DURATION = 2;
-var OUTLET_TOTAL_NOTES = 3;
-var OUTLET_TOTAL_DURATION = 4;
+const OUTLET_NOTE = 0;
+const OUTLET_VELOCITY = 1;
+const OUTLET_DURATION = 2;
+const OUTLET_TOTAL_NOTES = 3;
+const OUTLET_TOTAL_DURATION = 4;
 
 // state arrays
-var pattern = []; // base tap pattern
-var noteRepeats = []; // flat repeats array for scheduling notes
-var vizRepeats = []; // array to hold repeats for visualization
+let pattern: number[] = []; // base tap pattern
+var noteRepeats: NoteMeta[] = []; // flat repeats array for scheduling notes
+var vizRepeats: (LaneMeta | NoteMeta)[][] = []; // array to hold repeats for visualization
 
 // set defaults
 var options = [
@@ -140,13 +155,13 @@ setupRepeats();
 function setupRepeats() {
   // set up base pattern
   pattern = [0];
-  options[INLET_BASE1] && pattern.push(parseInt(options[INLET_BASE1]));
-  options[INLET_BASE2] && pattern.push(parseInt(options[INLET_BASE2]));
-  options[INLET_BASE3] && pattern.push(parseInt(options[INLET_BASE3]));
-  options[INLET_BASE4] && pattern.push(parseInt(options[INLET_BASE4]));
+  options[INLET_BASE1] && pattern.push(Math.floor(options[INLET_BASE1]));
+  options[INLET_BASE2] && pattern.push(Math.floor(options[INLET_BASE2]));
+  options[INLET_BASE3] && pattern.push(Math.floor(options[INLET_BASE3]));
+  options[INLET_BASE4] && pattern.push(Math.floor(options[INLET_BASE4]));
 
   // ensure pattern is in sorted time order
-  pattern = pattern.sort(function(a, b) { return a - b; });
+  pattern = pattern.sort(function (a, b) { return a - b; });
 
   // re-initialize repeats arrays
   vizRepeats = [];  // structure optimized for the visualization
@@ -155,7 +170,7 @@ function setupRepeats() {
   // populates noteRepeats and vizRepeats
   iterRepeats(options[INLET_ITERATIONS], 0, 0);
   // sort the note repeats from earliest to latest
-  noteRepeats = noteRepeats.sort( function(a, b) { return a.ms - b.ms; } );
+  noteRepeats = noteRepeats.sort(function (a, b) { return a.ms - b.ms; });
   //utils.log(noteRepeats);
 
   // redraw the visualization
@@ -163,10 +178,10 @@ function setupRepeats() {
   refresh();
 }
 
-function iterRepeats(togo, offsetMs, parentIdx) {
+function iterRepeats(togo: number, offsetMs: number, parentIdx: number) {
   // Initialize an array to hold information for the current visualization lane.
   // Each call to iterRepeats() will result in a new visualization lane.
-  var thisLane = [];
+  var thisLane: (LaneMeta | NoteMeta)[] = [];
 
   if (offsetMs > 0) {
     // not the base lane, so begin with a special node to link back to the parent
@@ -179,12 +194,12 @@ function iterRepeats(togo, offsetMs, parentIdx) {
     if (level > 0 && pattern[idx] === 0) {
       continue;
     }
-    var noteMeta = {
-      ms: parseInt(ms + offsetMs),
+    var noteMeta: NoteMeta = {
+      ms: Math.floor(ms + offsetMs),
       level: level,
       velocity_coeff: Math.pow(options[INLET_DECAY], level + (idx / 4.0)),
       note_incr: options[INLET_NOTEINCR] * level,
-      duration: parseInt(options[INLET_DUR_BASE] * Math.pow(options[INLET_DUR_DECAY], level + (idx / 4.0)))
+      duration: Math.floor(options[INLET_DUR_BASE] * Math.pow(options[INLET_DUR_DECAY], level + (idx / 4.0)))
     };
     noteRepeats.push(noteMeta);
 
@@ -203,16 +218,16 @@ function iterRepeats(togo, offsetMs, parentIdx) {
     var ms = pattern[idx] * Math.pow(options[INLET_STRETCH], level);
     if (togo > 1 && ms > 0) {
       // recurse
-      iterRepeats(togo - 1, parseInt(ms + offsetMs), thisLaneIdx);
+      iterRepeats(togo - 1, Math.floor(ms + offsetMs), thisLaneIdx);
     }
   }
 }
 
 // utility to return a function that will be used to create a note-playing task
-function makeTask(r, n, v) {
-  return function() {
-    n = parseInt(n + r.note_incr);
-    v = parseInt(v * r.velocity_coeff);
+function makeTask(r: NoteMeta, n: number, v: number) {
+  return function () {
+    n = Math.floor(n + r.note_incr);
+    v = Math.floor(v * r.velocity_coeff);
 
     //utils.log({
     //  n: n,
@@ -227,16 +242,16 @@ function makeTask(r, n, v) {
 }
 
 // handle int messages
-function msg_int(i) {
+function msg_int(i: number) {
   handleMessage(i);
 }
 // handle float messages
-function msg_float(i) {
+function msg_float(i: number) {
   handleMessage(i);
 }
 
 // method that is called when any input is received on an inlet
-function handleMessage(i) {
+function handleMessage(i: any) {
   // 'inlet' is a magic M4L variable to indicate which inlet received the last message
   options[inlet] = i;
 
@@ -248,7 +263,7 @@ function handleMessage(i) {
   if (inlet === INLET_NOTE && options[INLET_VELOCITY] > 0) {
     // note played, so schedule tasks to play notes in the future
     for (var idx = 0; idx < noteRepeats.length; idx++) {
-      var t = new Task( makeTask(noteRepeats[idx], options[INLET_NOTE], options[INLET_VELOCITY]) );
+      var t = new Task(makeTask(noteRepeats[idx], options[INLET_NOTE], options[INLET_VELOCITY]));
       t.schedule(noteRepeats[idx].ms);
     }
   }
@@ -279,17 +294,17 @@ function draw() {
     //utils.log(vizLane);
 
     // All notes in a lane have the same offset, so set up a color for them.
-    var hue = (360 + (30 * vizLane[1].note_incr) % 360) % 360;
+    var hue = (360 + (30 * (vizLane[1] as NoteMeta).note_incr) % 360) % 360;
     var color = utils.HSLToRGB(hue, 0.9, 0.6);
 
     if (vizIdx > 0) {
       // vertical line to connect to the parent bar
-      sketch.glcolor(0,0,0,0.8);
+      sketch.glcolor(0, 0, 0, 0.8);
       sketch.glrect(
         scale(vizLane[0].ms, 0, maxMs, xMin, xMax),                            // x0
         scale(vizIdx, 1, vizRepeats.length, yMin, yMax),                       // y0
         scale(vizLane[0].ms, 0, maxMs, xMin, xMax) + lineWidth,                // x1
-        scale(vizLane[0].parent, 1, vizRepeats.length, yMin, yMax) + lineWidth // y1
+        scale((vizLane[0] as LaneMeta).parent, 1, vizRepeats.length, yMin, yMax) + lineWidth // y1
       );
     }
 
@@ -312,18 +327,18 @@ function draw() {
 
       // outer black circle
       sketch.glcolor(0, 0, 0, 0.8);
-      sketch.circle((baseDia + 0.02) * vizLane[rpt].velocity_coeff);
+      sketch.circle((baseDia + 0.02) * (vizLane[rpt] as NoteMeta).velocity_coeff, 0, 360);
 
       // inner colored circle
       sketch.glcolor(color.r, color.g, color.b, 1.0);
-      sketch.circle(vizLane[rpt].velocity_coeff * baseDia);
+      sketch.circle((vizLane[rpt] as NoteMeta).velocity_coeff * baseDia, 0, 360);
     }
   }
 
   // Add some informational text
   var lastTap = noteRepeats[noteRepeats.length - 1];
   outlet(OUTLET_TOTAL_NOTES, noteRepeats.length);
-  outlet(OUTLET_TOTAL_DURATION, parseInt(lastTap.ms + lastTap.duration)/1000);
+  outlet(OUTLET_TOTAL_DURATION, Math.floor(lastTap.ms + lastTap.duration) / 1000);
 
   //if (noteRepeats.length > 0) {
   //  sketch.moveto(xMin - baseDia, yMax);
@@ -335,7 +350,7 @@ function draw() {
 }
 
 // Utility to scale a value from one range to another
-function scale(val, valMin, valMax, outMin, outMax) {
+function scale(val: number, valMin: number, valMax: number, outMin: number, outMax: number) {
   var valRange = valMax - valMin;
 
   // if there is no input range, then return the output minimum
