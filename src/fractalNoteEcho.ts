@@ -6,21 +6,6 @@ outlets = 5;
 sketch.default2d();
 sketch.glloadidentity();
 
-
-type LaneMeta = {
-  start: boolean,
-  ms: number,
-  parent: number
-}
-
-type NoteMeta = {
-  ms: number,
-  level: number,
-  velocity_coeff: number,
-  note_incr: number,
-  duration: number,
-};
-
 var utils = {
   // scale the values in a numeric array to the bounds specified in newMin, newMax
   scale: function (array: number[], newMin: number, newMax: number) {
@@ -33,6 +18,19 @@ var utils = {
     }
     var range = max - min;
 
+    type LaneMeta = {
+      start: boolean,
+      ms: number,
+      parent: number
+    }
+
+    type NoteMeta = {
+      ms: number,
+      level: number,
+      velocity_coeff: number,
+      note_incr: number,
+      duration: number,
+    };
     var newRange = newMax - newMin;
 
     var coeff = range ? newRange / range : 0.0;
@@ -238,6 +236,17 @@ function makeTask(r: NoteMeta, n: number, v: number) {
     outlet(OUTLET_DURATION, r.duration);
     outlet(OUTLET_VELOCITY, v);
     outlet(OUTLET_NOTE, n);
+
+    // Flash the bubble
+    r.is_on = true;
+    draw()
+    refresh()
+    const t = new Task(() => {
+      r.is_on = false;
+      draw()
+      refresh()
+    });
+    t.schedule(r.ms + r.duration);
   }
 }
 
@@ -271,7 +280,7 @@ function handleMessage(i: any) {
 
 function draw() {
   // clear the jsui area
-  sketch.glclearcolor(0.15, 0.15, 0.15, 1); // transparent
+  sketch.glclearcolor(0.15, 0.15, 0.15, 1);
   sketch.glclear();
 
   var lastRepeat = vizRepeats[vizRepeats.length - 1];
@@ -325,8 +334,12 @@ function draw() {
 
       sketch.moveto(xPos, yPos);
 
+      let borderColor = 0;
+      if ((vizLane[rpt] as NoteMeta).is_on) {
+        borderColor = 1;
+      }
       // outer black circle
-      sketch.glcolor(0, 0, 0, 0.8);
+      sketch.glcolor(borderColor, borderColor, borderColor, 1.0);
       sketch.circle((baseDia + 0.02) * (vizLane[rpt] as NoteMeta).velocity_coeff, 0, 360);
 
       // inner colored circle

@@ -208,6 +208,16 @@ function makeTask(r, n, v) {
         outlet(OUTLET_DURATION, r.duration);
         outlet(OUTLET_VELOCITY, v);
         outlet(OUTLET_NOTE, n);
+        // Flash the bubble
+        r.is_on = true;
+        draw();
+        refresh();
+        var t = new Task(function () {
+            r.is_on = false;
+            draw();
+            refresh();
+        });
+        t.schedule(r.ms + r.duration);
     };
 }
 // handle int messages
@@ -236,7 +246,7 @@ function handleMessage(i) {
 }
 function draw() {
     // clear the jsui area
-    sketch.glclearcolor(0.15, 0.15, 0.15, 1); // transparent
+    sketch.glclearcolor(0.15, 0.15, 0.15, 1);
     sketch.glclear();
     var lastRepeat = vizRepeats[vizRepeats.length - 1];
     var maxMs = lastRepeat[lastRepeat.length - 1].ms;
@@ -279,8 +289,12 @@ function draw() {
             var yPos = scale(vizIdx, 1, vizRepeats.length, yMin, yMax);
             //utils.log('ms: ' + vizLane[rpt].ms + ' scaled: ' + scale(vizLane[rpt].ms, 0, maxMs, -2.25, 3.25));
             sketch.moveto(xPos, yPos);
+            var borderColor = 0;
+            if (vizLane[rpt].is_on) {
+                borderColor = 1;
+            }
             // outer black circle
-            sketch.glcolor(0, 0, 0, 0.8);
+            sketch.glcolor(borderColor, borderColor, borderColor, 1.0);
             sketch.circle((baseDia + 0.02) * vizLane[rpt].velocity_coeff, 0, 360);
             // inner colored circle
             sketch.glcolor(color.r, color.g, color.b, 1.0);

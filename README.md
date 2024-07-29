@@ -4,7 +4,7 @@ This Max For Live device uses Javascript to implement a fractal MIDI note echo e
 
 This allows for easy creation of very complex patterns that, due to their nature in following a scaled pattern, tend to be pleasant to listen to and can inspire creativity you didn't know you had.
 
-![Two Taps, Four Iteration Example](images/iter2.4.png)
+![In Action](images/screenshot.gif)
 
 ## Installation / Setup
 
@@ -12,9 +12,9 @@ If you just want to download and install the device, then go to the [frozen/](ht
 
 ### Changelog
 
-* [3](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/raw/main/frozen/FractalNoteEcho-3.amxd) - 2023-07-09 - Add tempo-synced time mode option.
-* [0.0.2](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/raw/main/frozen/FractalNoteEcho-0.0.2.amxd) - 2022-06-07 - Improved look and feel.
-* [0.0.1](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/raw/main/frozen/FractalNoteEcho-0.0.1.amxd) - 2022-05-19 - Initial frozen release.
+- [3](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/raw/main/frozen/FractalNoteEcho-3.amxd) - 2023-07-09 - Add tempo-synced time mode option.
+- [0.0.2](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/raw/main/frozen/FractalNoteEcho-0.0.2.amxd) - 2022-06-07 - Improved look and feel.
+- [0.0.1](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/raw/main/frozen/FractalNoteEcho-0.0.1.amxd) - 2022-05-19 - Initial frozen release.
 
 ## What is a fractal MIDI note echo effect you ask?
 
@@ -52,9 +52,7 @@ This is the first thing I've done in Javascript with Max For Live, and I'm in lo
 
 ## Ideas
 
-
---------------------------------------------------
-
+---
 
 # m4l-typescript-base
 
@@ -112,4 +110,5 @@ This will update the `package.json` and `yarn.lock` files, which you can then co
 If you delete a `src/*.ts` file, you will need to manually delete the `js` file from the `Project/` directory. You can do this either on the host directly (e.g. in the Finder/Explorer, or in a Terminal window) or from within VSCode (e.g. via `rm` in the Cmd-J shell window or by right-clicking the file in the Explorer and choosing "Delete Permanently").
 
 ## TODOs
+
 ...
