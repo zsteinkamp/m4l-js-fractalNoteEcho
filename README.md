@@ -2,6 +2,11 @@
 
 Provides a starting point for a Typescript-based development environment for Max for Live projects that use Javascript objects like `js` and `jsui`. Uses Docker and VSCode devcontainer for the heavy lifting, thus eliminating the need to manage a build toolchain on your dev machine.
 
+Since it uses `types/maxforlive`, you can have good completion and parameter documentation for Max for Live Javascript objects.
+
+![Code Completion](images/code_completion.png)
+![Code Reference](images/code_ref.png)
+
 The container mounts the repo directory from the host read-write, and runs `tsc watch`, looking for changes in the `src/` directory. Any changes to `*.ts` files in the `src/` directory are built and transpiled to `Project/*.js`.
 
 ## Getting Started

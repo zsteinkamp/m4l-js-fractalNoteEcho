@@ -2,7 +2,7 @@
   "license": "MIT",
   "scripts": {
     "build": "yarn tsc",
-    "dev": "yarn install && yarn tsc --watch"
+    "dev": "yarn install --frozen-lockfile && yarn tsc --watch"
   },
   "devDependencies": {
     "@types/maxmsp": "^1.0.11",
