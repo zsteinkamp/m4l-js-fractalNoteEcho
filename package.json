@@ -1,10 +1,8 @@
 {
   "license": "MIT",
   "scripts": {
-    "tsc": "tsc",
-    "tsc-watch": "tsc --watch",
     "build": "yarn tsc",
-    "dev": "yarn tsc-watch"
+    "dev": "yarn install && yarn tsc --watch"
   },
   "devDependencies": {
     "@types/maxmsp": "^1.0.11",
