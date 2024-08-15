@@ -2,6 +2,47 @@ autowatch = 1;
 inlets = 12;
 outlets = 5;
 
+// inlets
+const INLET_NOTE = 0;
+const INLET_VELOCITY = 1;
+const INLET_ITERATIONS = 2;
+const INLET_STRETCH = 3;
+const INLET_DECAY = 4;
+const INLET_NOTEINCR = 5;
+const INLET_BASE1 = 6;
+const INLET_BASE2 = 7;
+const INLET_BASE3 = 8;
+const INLET_BASE4 = 9;
+const INLET_DUR_BASE = 10;
+const INLET_DUR_DECAY = 11;
+
+// outlets
+const OUTLET_NOTE = 0;
+const OUTLET_VELOCITY = 1;
+const OUTLET_DURATION = 2;
+const OUTLET_TOTAL_NOTES = 3;
+const OUTLET_TOTAL_DURATION = 4;
+
+setinletassist(INLET_NOTE, "Note Number (int)")
+setinletassist(INLET_VELOCITY, "Note Velocity (int)")
+setinletassist(INLET_ITERATIONS, "Iterations (int)")
+setinletassist(INLET_STRETCH, "Duration Stretch (float)")
+setinletassist(INLET_DECAY, "Velocity Decay (float)")
+setinletassist(INLET_NOTEINCR, "Note Increment (int)")
+setinletassist(INLET_BASE1, "Tap 1")
+setinletassist(INLET_BASE2, "Tap 2")
+setinletassist(INLET_BASE3, "Tap 3")
+setinletassist(INLET_BASE4, "Tap 4")
+setinletassist(INLET_DUR_BASE, "Duration Base (float)")
+setinletassist(INLET_DUR_DECAY, "Duration Decay (float)")
+
+// outlets
+setoutletassist(OUTLET_NOTE, "Note Number (int)")
+setoutletassist(OUTLET_VELOCITY, "Note Velocity (int)")
+setoutletassist(OUTLET_DURATION, "Note Duration (ms)")
+setoutletassist(OUTLET_TOTAL_NOTES, "Number of notes (int)")
+setoutletassist(OUTLET_TOTAL_DURATION, "Pattern Duration (ms)")
+
 // set up sketch canvas
 sketch.default2d();
 sketch.glloadidentity();
@@ -104,27 +145,6 @@ var utils = {
     post("\n");
   }
 };
-
-// inlets
-const INLET_NOTE = 0;
-const INLET_VELOCITY = 1;
-const INLET_ITERATIONS = 2;
-const INLET_STRETCH = 3;
-const INLET_DECAY = 4;
-const INLET_NOTEINCR = 5;
-const INLET_BASE1 = 6;
-const INLET_BASE2 = 7;
-const INLET_BASE3 = 8;
-const INLET_BASE4 = 9;
-const INLET_DUR_BASE = 10;
-const INLET_DUR_DECAY = 11;
-
-// outlets
-const OUTLET_NOTE = 0;
-const OUTLET_VELOCITY = 1;
-const OUTLET_DURATION = 2;
-const OUTLET_TOTAL_NOTES = 3;
-const OUTLET_TOTAL_DURATION = 4;
 
 // state arrays
 let pattern: number[] = []; // base tap pattern
@@ -304,11 +324,12 @@ function draw() {
 
     // All notes in a lane have the same offset, so set up a color for them.
     var hue = (360 + (30 * (vizLane[1] as NoteMeta).note_incr) % 360) % 360;
-    var color = utils.HSLToRGB(hue, 0.9, 0.6);
+    var color = utils.HSLToRGB(hue, 0.5, 0.4);
 
     if (vizIdx > 0) {
       // vertical line to connect to the parent bar
-      sketch.glcolor(0, 0, 0, 0.8);
+      //sketch.glcolor(0, 0, 0, 0.8);
+      sketch.glcolor(color.r, color.g, color.b, 0.6);
       sketch.glrect(
         scale(vizLane[0].ms, 0, maxMs, xMin, xMax),                            // x0
         scale(vizIdx, 1, vizRepeats.length, yMin, yMax),                       // y0
@@ -351,7 +372,15 @@ function draw() {
   // Add some informational text
   var lastTap = noteRepeats[noteRepeats.length - 1];
   outlet(OUTLET_TOTAL_NOTES, noteRepeats.length);
-  outlet(OUTLET_TOTAL_DURATION, Math.floor(lastTap.ms + lastTap.duration) / 1000);
+
+  let maxDur = 0
+  for (const nr of noteRepeats) {
+    let dur = nr.ms + nr.duration
+    if (dur > maxDur) {
+      maxDur = dur
+    }
+  }
+  outlet(OUTLET_TOTAL_DURATION, Math.floor(maxDur));
 
   //if (noteRepeats.length > 0) {
   //  sketch.moveto(xMin - baseDia, yMax);
