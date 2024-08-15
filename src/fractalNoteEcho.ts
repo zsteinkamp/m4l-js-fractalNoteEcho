@@ -247,6 +247,7 @@ function makeTask(r: NoteMeta, n: number, v: number) {
     n = Math.floor(n + r.note_incr);
     v = Math.floor(v * r.velocity_coeff);
 
+
     //utils.log({
     //  n: n,
     //  v: v,
@@ -266,7 +267,7 @@ function makeTask(r: NoteMeta, n: number, v: number) {
       draw()
       refresh()
     });
-    t.schedule(r.ms + r.duration);
+    t.schedule(r.duration);
   }
 }
 
@@ -360,7 +361,7 @@ function draw() {
         borderColor = 1;
       }
       // outer black circle
-      sketch.glcolor(borderColor, borderColor, borderColor, 1.0);
+      sketch.glcolor(borderColor, borderColor, borderColor, 0.8);
       sketch.circle((baseDia + 0.02) * (vizLane[rpt] as NoteMeta).velocity_coeff, 0, 360);
 
       // inner colored circle

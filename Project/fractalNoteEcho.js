@@ -235,7 +235,7 @@ function makeTask(r, n, v) {
             draw();
             refresh();
         });
-        t.schedule(r.ms + r.duration);
+        t.schedule(r.duration);
     };
 }
 // handle int messages
@@ -313,7 +313,7 @@ function draw() {
                 borderColor = 1;
             }
             // outer black circle
-            sketch.glcolor(borderColor, borderColor, borderColor, 1.0);
+            sketch.glcolor(borderColor, borderColor, borderColor, 0.8);
             sketch.circle((baseDia + 0.02) * vizLane[rpt].velocity_coeff, 0, 360);
             // inner colored circle
             sketch.glcolor(color.r, color.g, color.b, 1.0);
