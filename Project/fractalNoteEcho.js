@@ -1,3 +1,12 @@
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 autowatch = 1;
 inlets = 12;
 outlets = 5;
@@ -20,24 +29,50 @@ var OUTLET_VELOCITY = 1;
 var OUTLET_DURATION = 2;
 var OUTLET_TOTAL_NOTES = 3;
 var OUTLET_TOTAL_DURATION = 4;
-setinletassist(INLET_NOTE, "Note Number (int)");
-setinletassist(INLET_VELOCITY, "Note Velocity (int)");
-setinletassist(INLET_ITERATIONS, "Iterations (int)");
-setinletassist(INLET_STRETCH, "Duration Stretch (float)");
-setinletassist(INLET_DECAY, "Velocity Decay (float)");
-setinletassist(INLET_NOTEINCR, "Note Increment (int)");
-setinletassist(INLET_BASE1, "Tap 1");
-setinletassist(INLET_BASE2, "Tap 2");
-setinletassist(INLET_BASE3, "Tap 3");
-setinletassist(INLET_BASE4, "Tap 4");
-setinletassist(INLET_DUR_BASE, "Duration Base (float)");
-setinletassist(INLET_DUR_DECAY, "Duration Decay (float)");
+setinletassist(INLET_NOTE, 'Note Number (int)');
+setinletassist(INLET_VELOCITY, 'Note Velocity (int)');
+setinletassist(INLET_ITERATIONS, 'Iterations (int)');
+setinletassist(INLET_STRETCH, 'Duration Stretch (float)');
+setinletassist(INLET_DECAY, 'Velocity Decay (float)');
+setinletassist(INLET_NOTEINCR, 'Note Increment (int)');
+setinletassist(INLET_BASE1, 'Tap 1');
+setinletassist(INLET_BASE2, 'Tap 2');
+setinletassist(INLET_BASE3, 'Tap 3');
+setinletassist(INLET_BASE4, 'Tap 4');
+setinletassist(INLET_DUR_BASE, 'Duration Base (float)');
+setinletassist(INLET_DUR_DECAY, 'Duration Decay (float)');
 // outlets
-setoutletassist(OUTLET_NOTE, "Note Number (int)");
-setoutletassist(OUTLET_VELOCITY, "Note Velocity (int)");
-setoutletassist(OUTLET_DURATION, "Note Duration (ms)");
-setoutletassist(OUTLET_TOTAL_NOTES, "Number of notes (int)");
-setoutletassist(OUTLET_TOTAL_DURATION, "Pattern Duration (ms)");
+setoutletassist(OUTLET_NOTE, 'Note Number (int)');
+setoutletassist(OUTLET_VELOCITY, 'Note Velocity (int)');
+setoutletassist(OUTLET_DURATION, 'Note Duration (ms)');
+setoutletassist(OUTLET_TOTAL_NOTES, 'Number of notes (int)');
+setoutletassist(OUTLET_TOTAL_DURATION, 'Pattern Duration (ms)');
+var colors = [
+    // generated at https://supercolorpalette.com/?scp=G0-lch-FF6561-F58126-C49C00-84AE04-00B950-00BE93-00BFD5-00BAFF-00AEFF-7397FF-DA79F8-FF5DBC
+    // using the 'LCH' color model, since HSB generates colors of varying brightness
+    '#FF6561',
+    '#F58126',
+    '#C49C00',
+    '#84AE04',
+    '#00B950',
+    '#00BE93',
+    '#00BFD5',
+    '#00BAFF',
+    '#00AEFF',
+    '#7397FF',
+    '#DA79F8',
+    '#FF5DBC',
+].map(function (hex) {
+    var matches = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return matches
+        ? [
+            parseInt(matches[1], 16) / 255.0,
+            parseInt(matches[2], 16) / 255.0,
+            parseInt(matches[3], 16) / 255.0,
+            1,
+        ]
+        : [0, 0, 0, 1];
+});
 // set up sketch canvas
 sketch.default2d();
 sketch.glloadidentity();
@@ -58,79 +93,31 @@ var utils = {
         var range = max - min;
         var newRange = newMax - newMin;
         var coeff = range ? newRange / range : 0.0;
-        var offset = newMin - (min * coeff);
+        var offset = newMin - min * coeff;
         var returnArray = [];
         for (var i = 0; i < array.length; i++) {
             returnArray.push(array[i] * coeff + offset);
         }
-        //exports.log({
-        //    min: min,
-        //    max: max,
-        //    range: range,
-        //    newRange: newRange,
-        //    coeff: coeff,
-        //    offset: offset,
-        //    return: returnArray
-        //});
         return returnArray;
     },
-    HSLToRGB: function (h, s, l) {
-        //exports.log({ h: h, s: s, l: l });
-        var c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = l - c / 2, r = 0, g = 0, b = 0;
-        if (0 <= h && h < 60) {
-            r = c;
-            g = x;
-            b = 0;
-        }
-        else if (60 <= h && h < 120) {
-            r = x;
-            g = c;
-            b = 0;
-        }
-        else if (120 <= h && h < 180) {
-            r = 0;
-            g = c;
-            b = x;
-        }
-        else if (180 <= h && h < 240) {
-            r = 0;
-            g = x;
-            b = c;
-        }
-        else if (240 <= h && h < 300) {
-            r = x;
-            g = 0;
-            b = c;
-        }
-        else if (300 <= h && h < 360) {
-            r = c;
-            g = 0;
-            b = x;
-        }
-        return {
-            r: r + m,
-            g: g + m,
-            b: b + m
-        };
-    },
-    log: function () {
+    log: function (p0) {
         for (var i = 0, len = arguments.length; i < len; i++) {
             var message = arguments[i];
             if (message && message.toString) {
                 var s = message.toString();
-                if (s.indexOf("[object ") >= 0) {
+                if (s.indexOf('[object ') >= 0) {
                     s = JSON.stringify(message);
                 }
                 post(s);
             }
             else if (message === null) {
-                post("<null>");
+                post('<null>');
             }
             else {
                 post(message);
             }
         }
-        post("\n");
+        post('\n');
     }
 };
 // state arrays
@@ -139,37 +126,45 @@ var noteRepeats = []; // flat repeats array for scheduling notes
 var vizRepeats = []; // array to hold repeats for visualization
 // set defaults
 var options = [
-    0, // INLET_NOTE
-    0, // INLET_VELOCITY
-    2, // INLET_ITERATIONS
-    0.75, // INLET_STRETCH
-    0.66, // INLET_DECAY
-    0, // INLET_NOTEINCR
-    500, // INLET_BASE1
-    1000, // INLET_BASE2
-    0, // INLET_BASE3
-    0, // INLET_BASE4
-    100, // INLET_DUR_BASE
-    0.5 // INLET_DUR_DECAY
+    0,
+    0,
+    2,
+    0.75,
+    0.66,
+    0,
+    500,
+    1000,
+    0,
+    0,
+    100,
+    0.5, // INLET_DUR_DECAY
 ];
 // initialize
-setupRepeats();
+//setupRepeats();
 function setupRepeats() {
     // set up base pattern
-    pattern = [0];
-    options[INLET_BASE1] && pattern.push(Math.floor(options[INLET_BASE1]));
-    options[INLET_BASE2] && pattern.push(Math.floor(options[INLET_BASE2]));
-    options[INLET_BASE3] && pattern.push(Math.floor(options[INLET_BASE3]));
-    options[INLET_BASE4] && pattern.push(Math.floor(options[INLET_BASE4]));
+    pattern = [{ origTap: 0, ms: 0 }];
+    options[INLET_BASE1] &&
+        pattern.push({ origTap: 1, ms: Math.floor(options[INLET_BASE1]) });
+    options[INLET_BASE2] &&
+        pattern.push({ origTap: 2, ms: Math.floor(options[INLET_BASE2]) });
+    options[INLET_BASE3] &&
+        pattern.push({ origTap: 3, ms: Math.floor(options[INLET_BASE3]) });
+    options[INLET_BASE4] &&
+        pattern.push({ origTap: 4, ms: Math.floor(options[INLET_BASE4]) });
     // ensure pattern is in sorted time order
-    pattern = pattern.sort(function (a, b) { return a - b; });
+    pattern = pattern.sort(function (a, b) {
+        return a.ms - b.ms;
+    });
     // re-initialize repeats arrays
     vizRepeats = []; // structure optimized for the visualization
     noteRepeats = []; // structure optimized for playing notes
     // populates noteRepeats and vizRepeats
     iterRepeats(options[INLET_ITERATIONS], 0, 0);
     // sort the note repeats from earliest to latest
-    noteRepeats = noteRepeats.sort(function (a, b) { return a.ms - b.ms; });
+    noteRepeats = noteRepeats.sort(function (a, b) {
+        return a.ms - b.ms;
+    });
     //utils.log(noteRepeats);
     // redraw the visualization
     draw();
@@ -185,16 +180,18 @@ function iterRepeats(togo, offsetMs, parentIdx) {
     }
     for (var idx = 0; idx < pattern.length; idx++) {
         var level = options[INLET_ITERATIONS] - togo;
-        var ms = pattern[idx] * Math.pow(options[INLET_STRETCH], level);
-        if (level > 0 && pattern[idx] === 0) {
+        var ms = pattern[idx].ms * Math.pow(options[INLET_STRETCH], level);
+        if (level > 0 && pattern[idx].ms === 0) {
             continue;
         }
         var noteMeta = {
             ms: Math.floor(ms + offsetMs),
+            origTap: pattern[idx].origTap,
             level: level,
-            velocity_coeff: Math.pow(options[INLET_DECAY], level + (idx / 4.0)),
+            velocity_coeff: Math.pow(options[INLET_DECAY], level + idx / 4.0),
             note_incr: options[INLET_NOTEINCR] * level,
-            duration: Math.floor(options[INLET_DUR_BASE] * Math.pow(options[INLET_DUR_DECAY], level + (idx / 4.0)))
+            duration: Math.floor(options[INLET_DUR_BASE] *
+                Math.pow(options[INLET_DUR_DECAY], level + idx / 4.0))
         };
         noteRepeats.push(noteMeta);
         thisLane.push(noteMeta);
@@ -206,7 +203,7 @@ function iterRepeats(togo, offsetMs, parentIdx) {
     // loop through the pattern once more to recurse into iterRepeats()
     for (var idx = 0; idx < pattern.length; idx++) {
         var level = options[INLET_ITERATIONS] - togo;
-        var ms = pattern[idx] * Math.pow(options[INLET_STRETCH], level);
+        var ms = pattern[idx].ms * Math.pow(options[INLET_STRETCH], level);
         if (togo > 1 && ms > 0) {
             // recurse
             iterRepeats(togo - 1, Math.floor(ms + offsetMs), thisLaneIdx);
@@ -262,18 +259,23 @@ function handleMessage(i) {
         }
     }
 }
+var COLOR_BG = max.getcolor('live_lcd_bg');
+var COLOR_TITLE = max.getcolor('live_lcd_title');
 function draw() {
     // clear the jsui area
-    sketch.glclearcolor(0.15, 0.15, 0.15, 1);
+    sketch.glclearcolor(COLOR_BG);
     sketch.glclear();
     var lastRepeat = vizRepeats[vizRepeats.length - 1];
     var maxMs = lastRepeat[lastRepeat.length - 1].ms;
     // Our jsui drawing boundaries.
     // Vertically it can go from -1 to 1, and horizontally from -aspect to aspect.
     // Interestingly, it's the *patcher* aspect ratio (not presentation) that matters.
-    var xMin = -5.5;
-    var xMax = 5.5;
-    var yMin = -0.7;
+    var WIDTH = 600;
+    var HEIGHT = 111;
+    var ASPECT = (WIDTH - 40) / HEIGHT;
+    var xMin = -ASPECT;
+    var xMax = ASPECT;
+    var yMin = -0.65;
     var yMax = 0.8;
     var lineWidth = 0.02;
     var baseDia = 0.25; // note circle diameter
@@ -283,12 +285,14 @@ function draw() {
         var vizLane = vizRepeats[vizIdx];
         //utils.log(vizLane);
         // All notes in a lane have the same offset, so set up a color for them.
-        var hue = (360 + (30 * vizLane[1].note_incr) % 360) % 360;
-        var color = utils.HSLToRGB(hue, 0.5, 0.4);
+        var color = colors[(36 + vizLane[1].note_incr) % colors.length];
+        //utils.log('COLOR: ' + color.join(', '))
+        var barColor = __spreadArray([], color, true);
+        barColor[3] = 0.6;
         if (vizIdx > 0) {
             // vertical line to connect to the parent bar
             //sketch.glcolor(0, 0, 0, 0.8);
-            sketch.glcolor(color.r, color.g, color.b, 0.6);
+            sketch.glcolor(barColor);
             sketch.glrect(scale(vizLane[0].ms, 0, maxMs, xMin, xMax), // x0
             scale(vizIdx, 1, vizRepeats.length, yMin, yMax), // y0
             scale(vizLane[0].ms, 0, maxMs, xMin, xMax) + lineWidth, // x1
@@ -296,7 +300,7 @@ function draw() {
             );
         }
         // Lane bar
-        sketch.glcolor(color.r, color.g, color.b, 0.6);
+        sketch.glcolor(barColor);
         sketch.glrect(scale(vizLane[0].ms, 0, maxMs, xMin, xMax), // x0
         scale(vizIdx, 1, vizRepeats.length, yMin, yMax) - lineWidth, // y0
         scale(vizLane[vizLane.length - 1].ms, 0, maxMs, xMin, xMax), // x1
@@ -308,16 +312,21 @@ function draw() {
             var yPos = scale(vizIdx, 1, vizRepeats.length, yMin, yMax);
             //utils.log('ms: ' + vizLane[rpt].ms + ' scaled: ' + scale(vizLane[rpt].ms, 0, maxMs, -2.25, 3.25));
             sketch.moveto(xPos, yPos);
-            var borderColor = 0;
+            var borderColor = COLOR_BG;
             if (vizLane[rpt].is_on) {
-                borderColor = 1;
+                borderColor = COLOR_TITLE;
             }
             // outer black circle
-            sketch.glcolor(borderColor, borderColor, borderColor, 0.8);
+            sketch.glcolor(borderColor);
             sketch.circle((baseDia + 0.02) * vizLane[rpt].velocity_coeff, 0, 360);
             // inner colored circle
-            sketch.glcolor(color.r, color.g, color.b, 1.0);
+            sketch.glcolor(color);
             sketch.circle(vizLane[rpt].velocity_coeff * baseDia, 0, 360);
+            if (vizIdx === 0) {
+                sketch.glcolor(COLOR_BG);
+                sketch.textalign('center', 'center');
+                sketch.text(vizLane[rpt].origTap.toString());
+            }
         }
     }
     // Add some informational text
@@ -335,7 +344,7 @@ function draw() {
     //if (noteRepeats.length > 0) {
     //  sketch.moveto(xMin - baseDia, yMax);
     //  sketch.textalign("left");
-    //  
+    //
     //  sketch.glcolor(1,1,1,1); // white text
     //  sketch.text(noteRepeats.length + " Notes // Total " + parseInt(lastTap.ms + lastTap.duration)/1000 + " seconds");
     //}
@@ -350,5 +359,5 @@ function scale(val, valMin, valMax, outMin, outMax) {
     var outRange = outMax - outMin;
     var scaler = outRange / valRange;
     // y = mx + b, yo
-    return (scaler * val) + outMin;
+    return scaler * val + outMin;
 }

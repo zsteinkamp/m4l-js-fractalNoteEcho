@@ -8,7 +8,8 @@
       "extensions": [
         "rvest.vs-code-prettier-eslint",
         "esbenp.prettier-vscode",
-        "ms-vscode.makefile-tools"
+        "ms-vscode.makefile-tools",
+        "dbaeumer.vscode-eslint"
       ]
     }
   }
