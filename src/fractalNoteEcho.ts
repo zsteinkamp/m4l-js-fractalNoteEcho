@@ -62,11 +62,11 @@ const colors: Color[] = [
   const matches = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
   return matches
     ? [
-      parseInt(matches[1], 16) / 255.0,
-      parseInt(matches[2], 16) / 255.0,
-      parseInt(matches[3], 16) / 255.0,
-      1,
-    ]
+        parseInt(matches[1], 16) / 255.0,
+        parseInt(matches[2], 16) / 255.0,
+        parseInt(matches[3], 16) / 255.0,
+        1,
+      ]
     : [0, 0, 0, 1]
 })
 
@@ -80,7 +80,7 @@ const utils = {
     // get range
     let min = null
     let max = null
-    for (var i = 0; i < array.length; i++) {
+    for (let i = 0; i < array.length; i++) {
       if (min === null || array[i] < min) {
         min = array[i]
       }
@@ -94,7 +94,7 @@ const utils = {
     const offset = newMin - min * coeff
     const returnArray = []
 
-    for (var i = 0; i < array.length; i++) {
+    for (let i = 0; i < array.length; i++) {
       returnArray.push(array[i] * coeff + offset)
     }
 
@@ -188,9 +188,9 @@ function iterRepeats(togo: number, offsetMs: number, parentIdx: number) {
     thisLane.push({ start: true, ms: offsetMs, parent: parentIdx })
   }
 
-  for (var idx = 0; idx < pattern.length; idx++) {
-    var level = options[INLET_ITERATIONS] - togo
-    var ms = pattern[idx].ms * Math.pow(options[INLET_STRETCH], level)
+  for (let idx = 0; idx < pattern.length; idx++) {
+    const level = options[INLET_ITERATIONS] - togo
+    const ms = pattern[idx].ms * Math.pow(options[INLET_STRETCH], level)
     if (level > 0 && pattern[idx].ms === 0) {
       continue
     }
@@ -202,7 +202,7 @@ function iterRepeats(togo: number, offsetMs: number, parentIdx: number) {
       note_incr: options[INLET_NOTEINCR] * level,
       duration: Math.floor(
         options[INLET_DUR_BASE] *
-        Math.pow(options[INLET_DUR_DECAY], level + idx / 4.0)
+          Math.pow(options[INLET_DUR_DECAY], level + idx / 4.0)
       ),
     }
     noteRepeats.push(noteMeta)
@@ -217,9 +217,9 @@ function iterRepeats(togo: number, offsetMs: number, parentIdx: number) {
   const thisLaneIdx = vizRepeats.length - 1
 
   // loop through the pattern once more to recurse into iterRepeats()
-  for (var idx = 0; idx < pattern.length; idx++) {
-    var level = options[INLET_ITERATIONS] - togo
-    var ms = pattern[idx].ms * Math.pow(options[INLET_STRETCH], level)
+  for (let idx = 0; idx < pattern.length; idx++) {
+    const level = options[INLET_ITERATIONS] - togo
+    const ms = pattern[idx].ms * Math.pow(options[INLET_STRETCH], level)
     if (togo > 1 && ms > 0) {
       // recurse
       iterRepeats(togo - 1, Math.floor(ms + offsetMs), thisLaneIdx)
