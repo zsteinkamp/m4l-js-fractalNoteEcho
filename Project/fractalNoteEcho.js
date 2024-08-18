@@ -318,7 +318,7 @@ function draw() {
             }
             // outer black circle
             sketch.glcolor(borderColor);
-            sketch.circle((baseDia + 0.02) * vizLane[rpt].velocity_coeff, 0, 360);
+            sketch.circle((baseDia + 0.03) * vizLane[rpt].velocity_coeff, 0, 360);
             // inner colored circle
             sketch.glcolor(color);
             sketch.circle(vizLane[rpt].velocity_coeff * baseDia, 0, 360);
