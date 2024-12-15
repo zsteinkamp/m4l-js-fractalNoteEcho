@@ -2,9 +2,9 @@
 
 This Max For Live device uses Javascript to implement a fractal MIDI note echo effect.
 
-This allows for easy creation of very complex patterns that, due to their nature in following a scaled pattern, tend to be pleasant to listen to and can inspire creativity you didn't know you had.
-
 ![In Action](images/screenshot.gif)
+
+This allows for easy creation of very complex patterns that, due to their nature in following a scaled pattern, tend to be pleasant to listen to and can inspire creativity you didn't know you had.
 
 ## Installation / Setup
 
