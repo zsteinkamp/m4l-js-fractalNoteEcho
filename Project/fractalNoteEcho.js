@@ -8,7 +8,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 autowatch = 1;
-inlets = 12;
+inlets = 13;
 outlets = 5;
 // inlets
 var INLET_NOTE = 0;
@@ -23,6 +23,7 @@ var INLET_BASE3 = 8;
 var INLET_BASE4 = 9;
 var INLET_DUR_BASE = 10;
 var INLET_DUR_DECAY = 11;
+var INLET_SCALE_AWARE = 12;
 // outlets
 var OUTLET_NOTE = 0;
 var OUTLET_VELOCITY = 1;
@@ -41,6 +42,7 @@ setinletassist(INLET_BASE3, 'Tap 3');
 setinletassist(INLET_BASE4, 'Tap 4');
 setinletassist(INLET_DUR_BASE, 'Duration Base (float)');
 setinletassist(INLET_DUR_DECAY, 'Duration Decay (float)');
+setinletassist(INLET_SCALE_AWARE, 'Scale Aware (1|0)');
 // outlets
 setoutletassist(OUTLET_NOTE, 'Note Number (int)');
 setoutletassist(OUTLET_VELOCITY, 'Note Velocity (int)');
@@ -137,11 +139,67 @@ var options = [
     0,
     0,
     100,
-    0.5, // INLET_DUR_DECAY
+    0.5,
+    1, // INLET_SCALE_AWARE
 ];
-// initialize
-//setupRepeats();
+var scaleMeta = {
+    notes: [],
+    watchers: {
+        root: null,
+        int: null,
+        mode: null
+    }
+};
+function init() {
+    if (!scaleMeta.watchers.root) {
+        scaleMeta.watchers.root = new LiveAPI(updateScales, 'live_set');
+        scaleMeta.watchers.root.property = 'root_note';
+        scaleMeta.watchers.int = new LiveAPI(updateScales, 'live_set');
+        scaleMeta.watchers.int.property = 'scale_intervals';
+        scaleMeta.watchers.mode = new LiveAPI(updateScales, 'live_set');
+        scaleMeta.watchers.mode.property = 'scale_mode';
+    }
+}
+function updateScales() {
+    if (!scaleMeta.watchers.root) {
+        //log('early')
+        return;
+    }
+    var api = new LiveAPI(function () { }, 'live_set');
+    var root = api.get('root_note');
+    var intervals = api.get('scale_intervals');
+    scaleMeta.notes = [];
+    var root_note = root - 12;
+    var note = root_note;
+    while (note <= 127) {
+        for (var _i = 0, intervals_1 = intervals; _i < intervals_1.length; _i++) {
+            var interval = intervals_1[_i];
+            note = root_note + interval;
+            if (note >= 0 && note <= 127) {
+                scaleMeta.notes.push(note);
+            }
+        }
+        root_note += 12;
+        note = root_note;
+    }
+    //log(
+    //  'ROOT=' +
+    //    root +
+    //    ' INT=' +
+    //    intervals +
+    //    ' MODE=' +
+    //    state.scale_mode +
+    //    ' NAME=' +
+    //    state.scale_name +
+    //    ' AWARE=' +
+    //    state.scale_aware +
+    //    ' NOTES=' +
+    //    state.scale_notes
+}
 function setupRepeats() {
+    if (options[INLET_SCALE_AWARE]) {
+        updateScales();
+    }
     // set up base pattern
     pattern = [{ origTap: 0, ms: 0 }];
     options[INLET_BASE1] &&
@@ -213,7 +271,20 @@ function iterRepeats(togo, offsetMs, parentIdx) {
 // utility to return a function that will be used to create a note-playing task
 function makeTask(r, n, v) {
     return function () {
-        n = Math.floor(n + r.note_incr);
+        if (options[INLET_SCALE_AWARE]) {
+            // get base note, look up
+            var baseIdx = scaleMeta.notes.indexOf(n);
+            var newIdx = baseIdx + r.note_incr;
+            n = scaleMeta.notes[newIdx];
+            //log('NOTE: ' + n + ' base:' + baseIdx + ' new:' + newIdx)
+            if (!n) {
+                // invalid note
+                return;
+            }
+        }
+        else {
+            n = Math.floor(n + r.note_incr);
+        }
         v = Math.floor(v * r.velocity_coeff);
         //utils.log({
         //  n: n,

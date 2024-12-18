@@ -1,5 +1,5 @@
 autowatch = 1
-inlets = 12
+inlets = 13
 outlets = 5
 
 // inlets
@@ -15,6 +15,7 @@ const INLET_BASE3 = 8
 const INLET_BASE4 = 9
 const INLET_DUR_BASE = 10
 const INLET_DUR_DECAY = 11
+const INLET_SCALE_AWARE = 12
 
 // outlets
 const OUTLET_NOTE = 0
@@ -35,6 +36,7 @@ setinletassist(INLET_BASE3, 'Tap 3')
 setinletassist(INLET_BASE4, 'Tap 4')
 setinletassist(INLET_DUR_BASE, 'Duration Base (float)')
 setinletassist(INLET_DUR_DECAY, 'Duration Decay (float)')
+setinletassist(INLET_SCALE_AWARE, 'Scale Aware (1|0)')
 
 // outlets
 setoutletassist(OUTLET_NOTE, 'Note Number (int)')
@@ -139,12 +141,83 @@ const options = [
   0, // INLET_BASE4
   100, // INLET_DUR_BASE
   0.5, // INLET_DUR_DECAY
+  1, // INLET_SCALE_AWARE
 ]
 
 // initialize
 //setupRepeats();
+type ScaleType = {
+  notes: number[]
+  watchers: {
+    root: LiveAPI
+    int: LiveAPI
+    mode: LiveAPI
+  }
+}
+const scaleMeta: ScaleType = {
+  notes: [],
+  watchers: {
+    root: null,
+    int: null,
+    mode: null,
+  },
+}
+
+function init() {
+  if (!scaleMeta.watchers.root) {
+    scaleMeta.watchers.root = new LiveAPI(updateScales, 'live_set')
+    scaleMeta.watchers.root.property = 'root_note'
+
+    scaleMeta.watchers.int = new LiveAPI(updateScales, 'live_set')
+    scaleMeta.watchers.int.property = 'scale_intervals'
+
+    scaleMeta.watchers.mode = new LiveAPI(updateScales, 'live_set')
+    scaleMeta.watchers.mode.property = 'scale_mode'
+  }
+}
+
+function updateScales() {
+  if (!scaleMeta.watchers.root) {
+    //log('early')
+    return
+  }
+  const api = new LiveAPI(() => {}, 'live_set')
+  const root = api.get('root_note')
+  const intervals = api.get('scale_intervals')
+  scaleMeta.notes = []
+
+  let root_note = root - 12
+  let note = root_note
+
+  while (note <= 127) {
+    for (const interval of intervals) {
+      note = root_note + interval
+      if (note >= 0 && note <= 127) {
+        scaleMeta.notes.push(note)
+      }
+    }
+    root_note += 12
+    note = root_note
+  }
+  //log(
+  //  'ROOT=' +
+  //    root +
+  //    ' INT=' +
+  //    intervals +
+  //    ' MODE=' +
+  //    state.scale_mode +
+  //    ' NAME=' +
+  //    state.scale_name +
+  //    ' AWARE=' +
+  //    state.scale_aware +
+  //    ' NOTES=' +
+  //    state.scale_notes
+}
 
 function setupRepeats() {
+  if (options[INLET_SCALE_AWARE]) {
+    updateScales()
+  }
   // set up base pattern
   pattern = [{ origTap: 0, ms: 0 }]
   options[INLET_BASE1] &&
@@ -230,7 +303,20 @@ function iterRepeats(togo: number, offsetMs: number, parentIdx: number) {
 // utility to return a function that will be used to create a note-playing task
 function makeTask(r: NoteMeta, n: number, v: number) {
   return function () {
-    n = Math.floor(n + r.note_incr)
+    if (options[INLET_SCALE_AWARE]) {
+      // get base note, look up
+      const baseIdx = scaleMeta.notes.indexOf(n)
+      const newIdx = baseIdx + r.note_incr
+      n = scaleMeta.notes[newIdx]
+      //log('NOTE: ' + n + ' base:' + baseIdx + ' new:' + newIdx)
+      if (!n) {
+        // invalid note
+        return
+      }
+    } else {
+      n = Math.floor(n + r.note_incr)
+    }
+
     v = Math.floor(v * r.velocity_coeff)
 
     //utils.log({
