@@ -1,6 +1,6 @@
 # m4l-js-fractalNoteEcho
 
-This Max For Live device uses Javascript to implement a fractal MIDI note echo effect.
+This Max For Live device implements a fractal MIDI note echo effect.
 
 ![In Action](images/screenshot.gif)
 
