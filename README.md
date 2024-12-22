@@ -12,6 +12,7 @@ If you just want to download and install the device, then go to the [releases/](
 
 ### Changelog
 
+- [v7](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/releases/download/v7/FractalNoteEcho-v7.amxd) - 2024-12-22 - Fixes a bug that would make turd sounds when out-of-scale MIDI notes were received.
 - [v6](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/releases/download/v6/FractalNoteEcho-v6.amxd) - 2024-12-18 - Adds scale awareness.
 - [v5](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/releases/download/v5/FractalNoteEcho-v5.amxd) - 2024-10-29 - Add non-blocking telemetry ping on load. Does not send any identifying information, only the plugin name, the local computer name, type of computer, and CPU type. I just want to see which plugins are used the most.
 - [4](https://github.com/zsteinkamp/m4l-js-fractalNoteEcho/releases/download/v4/FractalNoteEcho-4.amxd) - 2023-07-28 - Rewrite in Typescript, add flashing bubbles.
