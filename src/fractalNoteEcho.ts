@@ -305,7 +305,15 @@ function makeTask(r: NoteMeta, n: number, v: number) {
   return function () {
     if (options[INLET_SCALE_AWARE]) {
       // get base note, look up
-      const baseIdx = scaleMeta.notes.indexOf(n)
+      let baseIdx = scaleMeta.notes.indexOf(n)
+      while (baseIdx < 0 && n > 0) {
+        n -= 1
+        baseIdx = scaleMeta.notes.indexOf(n)
+      }
+      if (baseIdx < 0) {
+        // invalid something or another
+        return
+      }
       const newIdx = baseIdx + r.note_incr
       n = scaleMeta.notes[newIdx]
       //log('NOTE: ' + n + ' base:' + baseIdx + ' new:' + newIdx)
